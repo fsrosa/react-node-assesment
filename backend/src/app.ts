@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes';
 import taskRoutes from './routes/taskRoutes';
+import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
 
@@ -22,6 +23,9 @@ app.use('/api/tasks', taskRoutes);
 app.get('/', (req: Request, res: Response) => {
   res.json({ message: 'Welcome to the Tasks Management API' });
 });
+
+// Error handling middleware
+app.use(errorHandler);
 
 // Start server
 app.listen(port, () => {
