@@ -150,7 +150,7 @@ export default function Tasks() {
       </div>
 
       {/* Tasks Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="space-y-4">
         {tasks.map((task) => (
           <div key={task.id} className="bg-white rounded-lg shadow p-6">
             <div className="flex items-start justify-between">
