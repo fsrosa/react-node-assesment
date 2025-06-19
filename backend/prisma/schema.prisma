@@ -44,4 +44,6 @@ enum Priority {
   MEDIUM
   HIGH
   URGENT
-} 
+}
+
+/// @seed="ts-node prisma/seed.ts" 
