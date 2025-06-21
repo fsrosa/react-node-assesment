@@ -32,8 +32,9 @@ export const userApi = {
     return response.data;
   },
 
-  delete: async (id: string): Promise<void> => {
+  delete: async (id: string): Promise<boolean> => {
     await api.delete(`/users/${id}`);
+    return true;
   },
 };
 
@@ -64,8 +65,9 @@ export const taskApi = {
     return response.data;
   },
 
-  delete: async (id: string): Promise<void> => {
+  delete: async (id: string): Promise<boolean> => {
     await api.delete(`/tasks/${id}`);
+    return true;
   },
 };
 

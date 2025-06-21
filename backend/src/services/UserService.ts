@@ -1,5 +1,6 @@
 import { IUserRepository } from '../repositories/interfaces/IUserRepository';
 import { CreateUserRequest, UpdateUserRequest, UserResponse } from '../models/User';
+import { eventService } from './EventService';
 
 export class UserService {
   private userRepository: IUserRepository;
@@ -9,7 +10,9 @@ export class UserService {
   }
 
   async createUser(data: CreateUserRequest): Promise<UserResponse> {
-    return await this.userRepository.create(data);
+    const user = await this.userRepository.create(data);
+    eventService.broadcastUserChange('CREATE', user);
+    return user;
   }
 
   async getAllUsers(): Promise<UserResponse[]> {
@@ -25,11 +28,20 @@ export class UserService {
   }
 
   async updateUser(id: string, data: UpdateUserRequest): Promise<UserResponse | null> {
-    return await this.userRepository.update(id, data);
+    const user = await this.userRepository.update(id, data);
+    if (user) {
+      eventService.broadcastUserChange('UPDATE', user);
+    }
+    return user;
   }
 
   async deleteUser(id: string): Promise<boolean> {
-    return await this.userRepository.delete(id);
+    const user = await this.userRepository.findById(id);
+    const deleted = await this.userRepository.delete(id);
+    if (deleted && user) {
+      eventService.broadcastUserChange('DELETE', user);
+    }
+    return deleted;
   }
 
   async getUsersWithTasks(): Promise<UserResponse[]> {

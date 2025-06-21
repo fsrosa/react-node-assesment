@@ -111,7 +111,9 @@ export default function TaskModal({
               onChange={(e) => onFormDataChange('userId', e.target.value)}
               className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-900 focus:bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
               disabled={isSubmitting}
+              required
             >
+              <option value="">Unassigned</option>
               {users.map((user) => (
                 <option key={user.id} value={user.id}>
                   {user.name}
