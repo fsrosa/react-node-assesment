@@ -29,7 +29,6 @@ const dueDateValidation = body('dueDate')
   .withMessage('Invalid date format');
 
 const userIdValidation = body('userId')
-  .optional()
   .isString()
   .withMessage('Invalid user ID format');
 

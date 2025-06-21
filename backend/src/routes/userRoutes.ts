@@ -1,12 +1,18 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/UserController';
 import { UserService } from '../services/UserService';
+import { RepositoryContainer } from '../container/RepositoryContainer';
 import { validate } from '../middleware/validation';
 import { createUserValidation, updateUserValidation } from '../middleware/validation/userValidation';
 import { idValidation } from '../middleware/validation/paramValidation';
 
 const router = Router();
-const userService = new UserService();
+
+// Get repository container instance
+const repositoryContainer = RepositoryContainer.getInstance();
+
+// Create service with repository dependency
+const userService = new UserService(repositoryContainer.getUserRepository());
 const userController = new UserController(userService);
 
 router.post(

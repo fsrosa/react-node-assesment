@@ -16,6 +16,25 @@ export interface UpdateTaskRequest {
   userId?: string;
 }
 
+// Repository-specific DTOs that accept string dates
+export interface CreateTaskRepositoryRequest {
+  title: string;
+  description?: string;
+  status?: TaskStatus;
+  priority?: Priority;
+  dueDate?: string;
+  userId?: string;
+}
+
+export interface UpdateTaskRepositoryRequest {
+  title?: string;
+  description?: string;
+  status?: TaskStatus;
+  priority?: Priority;
+  dueDate?: string;
+  userId?: string;
+}
+
 export interface TaskResponse {
   id: string;
   title: string;

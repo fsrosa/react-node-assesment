@@ -1,9 +1,13 @@
-import { PrismaClient } from '@prisma/client';
-import { CreateTaskRequest, UpdateTaskRequest, TaskResponse } from '../models/Task';
-
-const prisma = new PrismaClient();
+import { ITaskRepository } from '../repositories/interfaces/ITaskRepository';
+import { CreateTaskRequest, UpdateTaskRequest, TaskResponse, TaskStatus, Priority } from '../models/Task';
 
 export class TaskService {
+  private taskRepository: ITaskRepository;
+
+  constructor(taskRepository: ITaskRepository) {
+    this.taskRepository = taskRepository;
+  }
+
   async createTask(data: CreateTaskRequest): Promise<TaskResponse> {
     // Convert dueDate string to Date object if provided
     const createData = {
@@ -11,99 +15,48 @@ export class TaskService {
       dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : undefined
     };
 
-    const result = await prisma.task.create({
-      data: createData,
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      }
-    });
-
-    return result as TaskResponse;
+    return await this.taskRepository.create(createData);
   }
 
   async getAllTasks(): Promise<TaskResponse[]> {
-    const results = await prisma.task.findMany({
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      }
-    });
-
-    return results as TaskResponse[];
+    return await this.taskRepository.findAll();
   }
 
   async getTaskById(id: string): Promise<TaskResponse | null> {
-    const result = await prisma.task.findUnique({
-      where: { id },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      }
-    });
-
-    return result as TaskResponse | null;
+    return await this.taskRepository.findById(id);
   }
 
   async getTasksByUser(userId: string): Promise<TaskResponse[]> {
-    const results = await prisma.task.findMany({
-      where: { userId },
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      }
-    });
-
-    return results as TaskResponse[];
+    return await this.taskRepository.findByUserId(userId);
   }
 
-  async updateTask(id: string, data: UpdateTaskRequest): Promise<TaskResponse> {
+  async getTasksByStatus(status: TaskStatus): Promise<TaskResponse[]> {
+    return await this.taskRepository.findByStatus(status);
+  }
+
+  async getTasksByPriority(priority: Priority): Promise<TaskResponse[]> {
+    return await this.taskRepository.findByPriority(priority);
+  }
+
+  async getOverdueTasks(): Promise<TaskResponse[]> {
+    return await this.taskRepository.findOverdueTasks();
+  }
+
+  async getTasksWithUsers(): Promise<TaskResponse[]> {
+    return await this.taskRepository.findTasksWithUsers();
+  }
+
+  async updateTask(id: string, data: UpdateTaskRequest): Promise<TaskResponse | null> {
     // Convert dueDate string to Date object if provided
     const updateData = {
       ...data,
       dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : undefined
     };
 
-    const result = await prisma.task.update({
-      where: { id },
-      data: updateData,
-      include: {
-        user: {
-          select: {
-            id: true,
-            name: true,
-            email: true
-          }
-        }
-      }
-    });
-
-    return result as TaskResponse;
+    return await this.taskRepository.update(id, updateData);
   }
 
-  async deleteTask(id: string): Promise<void> {
-    await prisma.task.delete({
-      where: { id }
-    });
+  async deleteTask(id: string): Promise<boolean> {
+    return await this.taskRepository.delete(id);
   }
 } 

@@ -52,6 +52,9 @@ export class TaskController {
       const { id } = req.params;
       const taskData: UpdateTaskRequest = req.body;
       const task = await this.taskService.updateTask(id, taskData);
+      if (!task) {
+        return res.status(404).json({ error: 'Task not found' });
+      }
       res.json(task);
     } catch (error) {
       res.status(400).json({ error: 'Failed to update task: ' + error });
@@ -61,7 +64,10 @@ export class TaskController {
   async deleteTask(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      await this.taskService.deleteTask(id);
+      const deleted = await this.taskService.deleteTask(id);
+      if (!deleted) {
+        return res.status(404).json({ error: 'Task not found' });
+      }
       res.status(204).send();
     } catch (error) {
       res.status(500).json({ error: 'Failed to delete task' });

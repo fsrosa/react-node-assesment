@@ -1,12 +1,18 @@
 import { Router } from 'express';
 import { TaskController } from '../controllers/TaskController';
 import { TaskService } from '../services/TaskService';
+import { RepositoryContainer } from '../container/RepositoryContainer';
 import { validate } from '../middleware/validation';
 import { createTaskValidation, updateTaskValidation } from '../middleware/validation/taskValidation';
 import { idValidation, userIdValidation } from '../middleware/validation/paramValidation';
 
 const router = Router();
-const taskService = new TaskService();
+
+// Get repository container instance
+const repositoryContainer = RepositoryContainer.getInstance();
+
+// Create service with repository dependency
+const taskService = new TaskService(repositoryContainer.getTaskRepository());
 const taskController = new TaskController(taskService);
 
 router.post(
