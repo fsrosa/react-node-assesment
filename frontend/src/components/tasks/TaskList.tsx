@@ -1,5 +1,5 @@
 import { CheckSquare } from 'lucide-react';
-import type { Task, TaskStatus, Priority } from '../types';
+import type { Task, TaskStatus, Priority } from '../../types';
 import TaskCard from './TaskCard';
 
 interface TaskListProps {

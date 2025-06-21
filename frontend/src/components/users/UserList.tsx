@@ -1,5 +1,5 @@
 import { User as UserIcon } from 'lucide-react';
-import type { User } from '../types';
+import type { User } from '../../types';
 import UserCard from './UserCard';
 
 interface UserListProps {
