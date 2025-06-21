@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { Button } from '../ui';
 import type { Task, User, CreateTaskData } from '../../types';

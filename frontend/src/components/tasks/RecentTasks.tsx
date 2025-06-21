@@ -1,4 +1,4 @@
-import type { Task, Priority } from '../types';
+import type { Task, Priority } from '../../types';
 
 interface RecentTasksProps {
   tasks: Task[];
