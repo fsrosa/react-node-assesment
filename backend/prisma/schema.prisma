@@ -25,7 +25,7 @@ model Task {
   description String?
   status      TaskStatus @default(PENDING)
   priority    Priority   @default(MEDIUM)
-  dueDate     DateTime?
+  dueDate     DateTime? @db.Date
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   userId      String?  // Foreign key to User

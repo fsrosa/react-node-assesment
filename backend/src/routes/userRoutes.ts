@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import { UserController } from '../controllers/UserController';
+import { UserService } from '../services/UserService';
 import { validate } from '../middleware/validation';
 import { createUserValidation, updateUserValidation } from '../middleware/validation/userValidation';
 import { idValidation } from '../middleware/validation/paramValidation';
 
 const router = Router();
-const userController = new UserController();
+const userService = new UserService();
+const userController = new UserController(userService);
 
 router.post(
   '/',

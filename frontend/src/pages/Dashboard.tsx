@@ -69,7 +69,7 @@ export default function Dashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">Dashboard</h2>
+        <h2 className="text-2xl font-bold text-gray-900">Home</h2>
         <p className="text-gray-600">Overview of your task management system</p>
       </div>
 

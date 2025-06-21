@@ -12,9 +12,9 @@ export default function Layout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navItems = [
-    { path: '/', label: 'Dashboard', icon: Home },
-    { path: '/users', label: 'Users', icon: Users },
+    { path: '/', label: 'Home', icon: Home },
     { path: '/tasks', label: 'Tasks', icon: CheckSquare },
+    { path: '/users', label: 'Users', icon: Users },
   ];
 
   const closeSidebar = () => setSidebarOpen(false);

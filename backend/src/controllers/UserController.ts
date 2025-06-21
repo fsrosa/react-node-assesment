@@ -3,7 +3,7 @@ import { UserService } from '../services/UserService';
 import { CreateUserRequest, UpdateUserRequest } from '../models/User';
 
 export class UserController {
-  private userService = new UserService();
+  constructor(private userService: UserService) {}
 
   async createUser(req: Request, res: Response) {
     try {

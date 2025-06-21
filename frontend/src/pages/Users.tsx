@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, User as UserIcon } from 'lucide-react';
+import { Plus, Edit, Trash2, User as UserIcon, AlertCircle } from 'lucide-react';
 import type { User, CreateUserData, UpdateUserData } from '../types';
 import { userApi } from '../services/api';
 
@@ -8,6 +8,7 @@ export default function Users() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<CreateUserData>({
     name: '',
     email: '',
@@ -30,6 +31,8 @@ export default function Users() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null); // Clear previous errors
+    
     try {
       if (editingUser) {
         await userApi.update(editingUser.id, formData);
@@ -40,13 +43,18 @@ export default function Users() {
       setEditingUser(null);
       setFormData({ name: '', email: '' });
       fetchUsers();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving user:', error);
+      // Extract error message from API response
+      const errorMessage = error.response?.data?.errors[0].message || 
+                          'An unexpected error occurred while saving the user.';
+      setError(errorMessage);
     }
   };
 
   const handleEdit = (user: User) => {
     setEditingUser(user);
+    setError(null); // Clear errors when editing
     setFormData({ name: user.name, email: user.email });
     setShowModal(true);
   };
@@ -64,6 +72,7 @@ export default function Users() {
 
   const openCreateModal = () => {
     setEditingUser(null);
+    setError(null); // Clear errors when opening modal
     setFormData({ name: '', email: '' });
     setShowModal(true);
   };
@@ -109,13 +118,13 @@ export default function Users() {
               <div className="flex space-x-2">
                 <button
                   onClick={() => handleEdit(user)}
-                  className="text-gray-400 hover:text-blue-600"
+                  className="text-gray-600 hover:text-blue-600 bg-gray-200"
                 >
                   <Edit className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => handleDelete(user.id)}
-                  className="text-gray-400 hover:text-red-600"
+                  className="text-gray-600 hover:text-red-600 bg-gray-200"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -135,6 +144,17 @@ export default function Users() {
             <h3 className="text-lg font-medium text-gray-900 mb-4">
               {editingUser ? 'Edit User' : 'Add User'}
             </h3>
+            
+            {/* Error Display */}
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                <div className="flex items-center">
+                  <AlertCircle className="h-4 w-4 text-red-500 mr-2" />
+                  <span className="text-sm text-red-700">{error}</span>
+                </div>
+              </div>
+            )}
+            
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Name</label>
@@ -142,7 +162,7 @@ export default function Users() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-900 focus:bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>
@@ -152,7 +172,7 @@ export default function Users() {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-900 focus:bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>
@@ -160,7 +180,7 @@ export default function Users() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors duration-200"
                 >
                   Cancel
                 </button>

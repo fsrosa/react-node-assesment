@@ -3,7 +3,7 @@ import { TaskService } from '../services/TaskService';
 import { CreateTaskRequest, UpdateTaskRequest } from '../models/Task';
 
 export class TaskController {
-  private taskService = new TaskService();
+  constructor(private taskService: TaskService) {}
 
   async createTask(req: Request, res: Response) {
     try {
@@ -11,7 +11,7 @@ export class TaskController {
       const task = await this.taskService.createTask(taskData);
       res.status(201).json(task);
     } catch (error) {
-      res.status(400).json({ error: 'Failed to create task' });
+      res.status(400).json({ error: 'Failed to create task' + error });
     }
   }
 
@@ -54,7 +54,7 @@ export class TaskController {
       const task = await this.taskService.updateTask(id, taskData);
       res.json(task);
     } catch (error) {
-      res.status(400).json({ error: 'Failed to update task' });
+      res.status(400).json({ error: 'Failed to update task: ' + error });
     }
   }
 

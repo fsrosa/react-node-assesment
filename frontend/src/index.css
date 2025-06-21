@@ -2,6 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Custom date input icon styling */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.5) sepia(1) saturate(5) hue-rotate(200deg);
+  cursor: pointer;
+}
+
+input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="date"]::-webkit-datetime-edit-fields-wrapper {
+  color: #111827;
+}
+
+input[type="date"]::-webkit-datetime-edit {
+  color: #111827;
+}
+
+input[type="date"]::-webkit-datetime-edit-year-field,
+input[type="date"]::-webkit-datetime-edit-month-field,
+input[type="date"]::-webkit-datetime-edit-day-field {
+  color: #111827;
+}
+
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;

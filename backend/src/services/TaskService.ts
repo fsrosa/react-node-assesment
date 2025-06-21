@@ -5,8 +5,14 @@ const prisma = new PrismaClient();
 
 export class TaskService {
   async createTask(data: CreateTaskRequest): Promise<TaskResponse> {
-    return await prisma.task.create({
-      data,
+    // Convert dueDate string to Date object if provided
+    const createData = {
+      ...data,
+      dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : undefined
+    };
+
+    const result = await prisma.task.create({
+      data: createData,
       include: {
         user: {
           select: {
@@ -17,10 +23,12 @@ export class TaskService {
         }
       }
     });
+
+    return result as TaskResponse;
   }
 
   async getAllTasks(): Promise<TaskResponse[]> {
-    return await prisma.task.findMany({
+    const results = await prisma.task.findMany({
       include: {
         user: {
           select: {
@@ -31,10 +39,12 @@ export class TaskService {
         }
       }
     });
+
+    return results as TaskResponse[];
   }
 
   async getTaskById(id: string): Promise<TaskResponse | null> {
-    return await prisma.task.findUnique({
+    const result = await prisma.task.findUnique({
       where: { id },
       include: {
         user: {
@@ -46,10 +56,12 @@ export class TaskService {
         }
       }
     });
+
+    return result as TaskResponse | null;
   }
 
   async getTasksByUser(userId: string): Promise<TaskResponse[]> {
-    return await prisma.task.findMany({
+    const results = await prisma.task.findMany({
       where: { userId },
       include: {
         user: {
@@ -61,12 +73,20 @@ export class TaskService {
         }
       }
     });
+
+    return results as TaskResponse[];
   }
 
   async updateTask(id: string, data: UpdateTaskRequest): Promise<TaskResponse> {
-    return await prisma.task.update({
+    // Convert dueDate string to Date object if provided
+    const updateData = {
+      ...data,
+      dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : undefined
+    };
+
+    const result = await prisma.task.update({
       where: { id },
-      data,
+      data: updateData,
       include: {
         user: {
           select: {
@@ -77,6 +97,8 @@ export class TaskService {
         }
       }
     });
+
+    return result as TaskResponse;
   }
 
   async deleteTask(id: string): Promise<void> {

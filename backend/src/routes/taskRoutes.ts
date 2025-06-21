@@ -1,11 +1,13 @@
 import { Router } from 'express';
 import { TaskController } from '../controllers/TaskController';
+import { TaskService } from '../services/TaskService';
 import { validate } from '../middleware/validation';
 import { createTaskValidation, updateTaskValidation } from '../middleware/validation/taskValidation';
 import { idValidation, userIdValidation } from '../middleware/validation/paramValidation';
 
 const router = Router();
-const taskController = new TaskController();
+const taskService = new TaskService();
+const taskController = new TaskController(taskService);
 
 router.post(
   '/',

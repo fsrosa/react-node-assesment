@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, CheckSquare } from 'lucide-react';
-import type { Task, User, CreateTaskData, UpdateTaskData, TaskStatus, Priority } from '../types';
+import { Plus, Edit, Trash2, CheckSquare, AlertCircle } from 'lucide-react';
+import type { Task, User, CreateTaskData, TaskStatus, Priority } from '../types';
 import { TaskStatus as TaskStatusEnum, Priority as PriorityEnum } from '../types';
 import { taskApi, userApi } from '../services/api';
 
@@ -10,6 +10,7 @@ export default function Tasks() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<CreateTaskData>({
     title: '',
     description: '',
@@ -40,11 +41,19 @@ export default function Tasks() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null); // Clear previous errors
+    
     try {
+      // Send the date string directly - no timezone conversion needed
+      const processedData = {
+        ...formData,
+        dueDate: formData.dueDate || undefined
+      };
+
       if (editingTask) {
-        await taskApi.update(editingTask.id, formData);
+        await taskApi.update(editingTask.id, processedData);
       } else {
-        await taskApi.create(formData);
+        await taskApi.create(processedData);
       }
       setShowModal(false);
       setEditingTask(null);
@@ -57,13 +66,18 @@ export default function Tasks() {
         userId: '',
       });
       fetchData();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving task:', error);
+      // Extract error message from API response
+      const errorMessage = error.response?.data?.errors[0].message || 
+                          'An unexpected error occurred while saving the task.';
+      setError(errorMessage);
     }
   };
 
   const handleEdit = (task: Task) => {
     setEditingTask(task);
+    setError(null); // Clear errors when editing
     setFormData({
       title: task.title,
       description: task.description || '',
@@ -88,6 +102,7 @@ export default function Tasks() {
 
   const openCreateModal = () => {
     setEditingTask(null);
+    setError(null); // Clear errors when opening modal
     setFormData({
       title: '',
       description: '',
@@ -172,19 +187,19 @@ export default function Tasks() {
                         task.status
                       )}`}
                     >
-                      {task.status}
+                      Status: {task.status}
                     </span>
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(
                         task.priority
                       )}`}
                     >
-                      {task.priority}
+                      Priority: {task.priority}
                     </span>
                   </div>
                   {task.dueDate && (
                     <p className="text-xs text-gray-400 mt-2">
-                      Due: {new Date(task.dueDate).toLocaleDateString()}
+                      Due: {task.dueDate.split('T')[0]}
                     </p>
                   )}
                 </div>
@@ -192,13 +207,13 @@ export default function Tasks() {
               <div className="flex space-x-2">
                 <button
                   onClick={() => handleEdit(task)}
-                  className="text-gray-400 hover:text-blue-600"
+                  className="text-gray-600 hover:text-blue-600 bg-gray-200"
                 >
                   <Edit className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => handleDelete(task.id)}
-                  className="text-gray-400 hover:text-red-600"
+                  className="text-gray-600 hover:text-red-600 bg-gray-200"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -215,6 +230,17 @@ export default function Tasks() {
             <h3 className="text-lg font-medium text-gray-900 mb-4">
               {editingTask ? 'Edit Task' : 'Add Task'}
             </h3>
+            
+            {/* Error Display */}
+            {error && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+                <div className="flex items-center">
+                  <AlertCircle className="h-4 w-4 text-red-500 mr-2" />
+                  <span className="text-sm text-red-700">{error}</span>
+                </div>
+              </div>
+            )}
+            
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Title</label>
@@ -222,7 +248,7 @@ export default function Tasks() {
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-900 focus:bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   required
                 />
               </div>
@@ -231,7 +257,7 @@ export default function Tasks() {
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-900 focus:bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   rows={3}
                 />
               </div>
@@ -240,7 +266,7 @@ export default function Tasks() {
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value as TaskStatus })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-900 focus:bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="PENDING">Pending</option>
                   <option value="IN_PROGRESS">In Progress</option>
@@ -253,7 +279,7 @@ export default function Tasks() {
                 <select
                   value={formData.priority}
                   onChange={(e) => setFormData({ ...formData, priority: e.target.value as Priority })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-900 focus:bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="LOW">Low</option>
                   <option value="MEDIUM">Medium</option>
@@ -267,7 +293,7 @@ export default function Tasks() {
                   type="date"
                   value={formData.dueDate}
                   onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-900 focus:bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 />
               </div>
               <div>
@@ -275,7 +301,7 @@ export default function Tasks() {
                 <select
                   value={formData.userId}
                   onChange={(e) => setFormData({ ...formData, userId: e.target.value })}
-                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-900 focus:bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 >
                   <option value="">Unassigned</option>
                   {users.map((user) => (
@@ -289,7 +315,7 @@ export default function Tasks() {
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors duration-200"
                 >
                   Cancel
                 </button>
