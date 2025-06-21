@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { User, CreateUserData } from '../types';
 import { userApi } from '../services/api';
+import { useData } from '../context';
 
 export function useUsers() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { users, loading, refreshUsers } = useData();
   const [submitting, setSubmitting] = useState(false);
   const [deletingUserId, setDeletingUserId] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -14,17 +14,6 @@ export function useUsers() {
     name: '',
     email: '',
   });
-
-  const fetchUsers = async () => {
-    try {
-      const data = await userApi.getAll();
-      setUsers(data);
-    } catch (error) {
-      console.error('Error fetching users:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +29,7 @@ export function useUsers() {
       setShowModal(false);
       setEditingUser(null);
       setFormData({ name: '', email: '' });
-      fetchUsers();
+      await refreshUsers();
     } catch (error: any) {
       console.error('Error saving user:', error);
       const errorMessage = error.response?.data?.errors[0].message || 
@@ -63,7 +52,7 @@ export function useUsers() {
       setDeletingUserId(id);
       try {
         await userApi.delete(id);
-        fetchUsers();
+        await refreshUsers();
       } catch (error) {
         console.error('Error deleting user:', error);
       } finally {
@@ -89,10 +78,6 @@ export function useUsers() {
   const updateFormData = (field: keyof CreateUserData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
 
   return {
     // State

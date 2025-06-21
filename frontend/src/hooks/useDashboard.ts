@@ -1,26 +1,8 @@
-import { useState, useEffect } from 'react';
-import type { User, Task, Priority } from '../types';
-import { userApi, taskApi } from '../services/api';
+import { useData } from '../context';
+import type { Priority } from '../types';
 
 export function useDashboard() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const fetchData = async () => {
-    try {
-      const [usersData, tasksData] = await Promise.all([
-        userApi.getAll(),
-        taskApi.getAll(),
-      ]);
-      setUsers(usersData);
-      setTasks(tasksData);
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { users, tasks, loading } = useData();
 
   const getPriorityColor = (priority: Priority) => {
     switch (priority) {
@@ -67,10 +49,6 @@ export function useDashboard() {
       .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 5);
   };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   return {
     // State

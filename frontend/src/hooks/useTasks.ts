@@ -1,12 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { Task, User, CreateTaskData, TaskStatus, Priority } from '../types';
 import { TaskStatus as TaskStatusEnum, Priority as PriorityEnum } from '../types';
-import { taskApi, userApi } from '../services/api';
+import { taskApi } from '../services/api';
+import { useData } from '../context';
 
 export function useTasks() {
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { tasks, users, loading, refreshTasks } = useData();
   const [submitting, setSubmitting] = useState(false);
   const [deletingTaskId, setDeletingTaskId] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -20,21 +19,6 @@ export function useTasks() {
     dueDate: '',
     userId: '',
   });
-
-  const fetchData = async () => {
-    try {
-      const [tasksData, usersData] = await Promise.all([
-        taskApi.getAll(),
-        userApi.getAll(),
-      ]);
-      setTasks(tasksData);
-      setUsers(usersData);
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,7 +46,7 @@ export function useTasks() {
         dueDate: '',
         userId: '',
       });
-      fetchData();
+      await refreshTasks();
     } catch (error: any) {
       console.error('Error saving task:', error);
       const errorMessage = error.response?.data?.errors[0].message || 
@@ -92,7 +76,7 @@ export function useTasks() {
       setDeletingTaskId(id);
       try {
         await taskApi.delete(id);
-        fetchData();
+        await refreshTasks();
       } catch (error) {
         console.error('Error deleting task:', error);
       } finally {
@@ -158,10 +142,6 @@ export function useTasks() {
         return 'bg-green-100 text-green-800';
     }
   };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
 
   return {
     // State
