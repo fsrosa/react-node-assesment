@@ -1,23 +1,32 @@
 import { body } from 'express-validator';
 
 // Common validation rules
-const emailValidation = body('email')
+const emailRequired = body('email')
+  .exists({ checkFalsy: true })
+  .withMessage('Email is required');
+
+const emailValid = body('email')
   .trim()
   .isEmail()
   .withMessage('Please provide a valid email address')
   .normalizeEmail();
 
-const nameValidation = body('name')
-  .trim()
+const nameRequired = body('name')
+  .exists({ checkFalsy: true })
+  .withMessage('Name is required');
+
+const nameLength = body('name')
   .isLength({ min: 2, max: 50 })
   .withMessage('Name must be between 2 and 50 characters long');
 
 export const createUserValidation = [
-  emailValidation,
-  nameValidation.notEmpty().withMessage('Name is required')
+  emailRequired,
+  emailValid,
+  nameRequired,
+  nameLength
 ];
 
 export const updateUserValidation = [
-  emailValidation.optional(),
-  nameValidation.optional()
+  emailValid.optional(),
+  nameLength.optional()
 ];

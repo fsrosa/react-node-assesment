@@ -1,5 +1,6 @@
 import { ITaskRepository } from '../repositories/interfaces/ITaskRepository';
 import { CreateTaskRequest, UpdateTaskRequest, TaskResponse, TaskStatus, Priority } from '../models/Task';
+import { eventService } from './EventService';
 
 export class TaskService {
   private taskRepository: ITaskRepository;
@@ -15,11 +16,13 @@ export class TaskService {
       dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : undefined
     };
 
-    return await this.taskRepository.create(createData);
+    const task = await this.taskRepository.create(createData);
+    eventService.broadcastTaskChange('CREATE', task);
+    return task;
   }
 
   async getAllTasks(): Promise<TaskResponse[]> {
-    return await this.taskRepository.findAll();
+    return await this.taskRepository.findTasksWithUsers();
   }
 
   async getTaskById(id: string): Promise<TaskResponse | null> {
@@ -27,19 +30,26 @@ export class TaskService {
   }
 
   async getTasksByUser(userId: string): Promise<TaskResponse[]> {
-    return await this.taskRepository.findByUserId(userId);
+    const allTasksWithUsers = await this.taskRepository.findTasksWithUsers();
+    return allTasksWithUsers.filter(task => task.userId === userId);
   }
 
   async getTasksByStatus(status: TaskStatus): Promise<TaskResponse[]> {
-    return await this.taskRepository.findByStatus(status);
+    const allTasksWithUsers = await this.taskRepository.findTasksWithUsers();
+    return allTasksWithUsers.filter(task => task.status === status);
   }
 
   async getTasksByPriority(priority: Priority): Promise<TaskResponse[]> {
-    return await this.taskRepository.findByPriority(priority);
+    const allTasksWithUsers = await this.taskRepository.findTasksWithUsers();
+    return allTasksWithUsers.filter(task => task.priority === priority);
   }
 
   async getOverdueTasks(): Promise<TaskResponse[]> {
-    return await this.taskRepository.findOverdueTasks();
+    const allTasksWithUsers = await this.taskRepository.findTasksWithUsers();
+    const now = new Date();
+    return allTasksWithUsers.filter(task => 
+      task.dueDate && new Date(task.dueDate) < now && task.status !== 'COMPLETED'
+    );
   }
 
   async getTasksWithUsers(): Promise<TaskResponse[]> {
@@ -53,10 +63,19 @@ export class TaskService {
       dueDate: data.dueDate ? new Date(data.dueDate).toISOString() : undefined
     };
 
-    return await this.taskRepository.update(id, updateData);
+    const task = await this.taskRepository.update(id, updateData);
+    if (task) {
+      eventService.broadcastTaskChange('UPDATE', task);
+    }
+    return task;
   }
 
   async deleteTask(id: string): Promise<boolean> {
-    return await this.taskRepository.delete(id);
+    const task = await this.taskRepository.findById(id);
+    const deleted = await this.taskRepository.delete(id);
+    if (deleted && task) {
+      eventService.broadcastTaskChange('DELETE', task);
+    }
+    return deleted;
   }
 } 

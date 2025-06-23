@@ -24,7 +24,7 @@ export default function LoadingSpinner({
   return (
     <div className="flex items-center justify-center h-64">
       <div className="flex items-center space-x-3">
-        <Loader2 className={`${sizeClasses[size]} animate-spin text-blue-600`} />
+        <Loader2 className={`${sizeClasses[size]} animate-spin text-blue-600`} data-testid="spinner-icon" />
         <div className={`${textSizes[size]} text-gray-600`}>{message}</div>
       </div>
     </div>

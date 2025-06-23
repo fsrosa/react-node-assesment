@@ -32,6 +32,11 @@ const userIdValidation = body('userId')
   .isString()
   .withMessage('Invalid user ID format');
 
+const userIdUpdateValidation = body('userId')
+  .optional()
+  .isString()
+  .withMessage('Invalid user ID format');
+
 export const createTaskValidation = [
   titleValidation.notEmpty().withMessage('Title is required'),
   descriptionValidation,
@@ -47,5 +52,5 @@ export const updateTaskValidation = [
   statusValidation,
   priorityValidation,
   dueDateValidation,
-  userIdValidation
+  userIdUpdateValidation
 ];

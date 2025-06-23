@@ -44,10 +44,11 @@ export default function TaskModal({
           </div>
         )}
         
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-4" role="form">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Title</label>
+            <label htmlFor="task-title" className="block text-sm font-medium text-gray-700">Title</label>
             <input
+              id="task-title"
               type="text"
               value={formData.title}
               onChange={(e) => onFormDataChange('title', e.target.value)}
@@ -57,8 +58,9 @@ export default function TaskModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Description</label>
+            <label htmlFor="task-description" className="block text-sm font-medium text-gray-700">Description</label>
             <textarea
+              id="task-description"
               value={formData.description}
               onChange={(e) => onFormDataChange('description', e.target.value)}
               className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-900 focus:bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
@@ -67,8 +69,9 @@ export default function TaskModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Status</label>
+            <label htmlFor="task-status" className="block text-sm font-medium text-gray-700">Status</label>
             <select
+              id="task-status"
               value={formData.status}
               onChange={(e) => onFormDataChange('status', e.target.value)}
               className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-900 focus:bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
@@ -81,8 +84,9 @@ export default function TaskModal({
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Priority</label>
+            <label htmlFor="task-priority" className="block text-sm font-medium text-gray-700">Priority</label>
             <select
+              id="task-priority"
               value={formData.priority}
               onChange={(e) => onFormDataChange('priority', e.target.value)}
               className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-900 focus:bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
@@ -95,8 +99,9 @@ export default function TaskModal({
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Due Date</label>
+            <label htmlFor="task-due-date" className="block text-sm font-medium text-gray-700">Due Date</label>
             <input
+              id="task-due-date"
               type="date"
               value={formData.dueDate}
               onChange={(e) => onFormDataChange('dueDate', e.target.value)}
@@ -105,13 +110,16 @@ export default function TaskModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Assign to User</label>
+            <label htmlFor="task-user-id" className="block text-sm font-medium text-gray-700">Assign to User</label>
             <select
+              id="task-user-id"
               value={formData.userId}
               onChange={(e) => onFormDataChange('userId', e.target.value)}
               className="mt-1 block w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 text-gray-900 focus:bg-white focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
               disabled={isSubmitting}
+              required
             >
+              <option value="">Unassigned</option>
               {users.map((user) => (
                 <option key={user.id} value={user.id}>
                   {user.name}

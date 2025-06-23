@@ -42,10 +42,11 @@ export default function UserModal({
           </div>
         )}
         
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={onSubmit} className="space-y-4" role="form">
           <div>
-            <label className="block text-sm font-medium text-gray-700">Name</label>
+            <label htmlFor="user-name" className="block text-sm font-medium text-gray-700">Name</label>
             <input
+              id="user-name"
               type="text"
               value={formData.name}
               onChange={(e) => onFormDataChange('name', e.target.value)}
@@ -55,8 +56,9 @@ export default function UserModal({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700">Email</label>
+            <label htmlFor="user-email" className="block text-sm font-medium text-gray-700">Email</label>
             <input
+              id="user-email"
               type="email"
               value={formData.email}
               onChange={(e) => onFormDataChange('email', e.target.value)}

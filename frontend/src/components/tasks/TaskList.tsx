@@ -33,18 +33,20 @@ export default function TaskList({
 
   return (
     <div className="space-y-4">
-      {tasks.map((task) => (
-        <TaskCard
-          key={task.id}
-          task={task}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          isSubmitting={isSubmitting}
-          isDeleting={deletingTaskId === task.id}
-          getStatusColor={getStatusColor}
-          getPriorityColor={getPriorityColor}
-        />
-      ))}
+      {tasks
+        .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+        .map((task) => (  
+          <TaskCard
+            key={task.id}
+            task={task}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            isSubmitting={isSubmitting}
+            isDeleting={deletingTaskId === task.id}
+            getStatusColor={getStatusColor}
+            getPriorityColor={getPriorityColor}
+          />
+        ))}
     </div>
   );
 } 
