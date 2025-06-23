@@ -36,6 +36,7 @@ export default function UserCard({
             size="sm"
             disabled={isSubmitting || isDeleting}
             className="p-2"
+            aria-label="Edit user"
           >
             <Edit className="h-4 w-4" />
           </Button>
@@ -46,6 +47,7 @@ export default function UserCard({
             disabled={isSubmitting || isDeleting}
             loading={isDeleting}
             className="p-2"
+            aria-label="Delete user"
           >
             <Trash2 className="h-4 w-4" />
           </Button>

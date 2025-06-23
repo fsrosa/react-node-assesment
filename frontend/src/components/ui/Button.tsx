@@ -10,6 +10,7 @@ interface ButtonProps {
   disabled?: boolean;
   loading?: boolean;
   className?: string;
+  'aria-label'?: string;
 }
 
 export default function Button({
@@ -21,6 +22,7 @@ export default function Button({
   disabled = false,
   loading = false,
   className = '',
+  'aria-label': ariaLabel,
 }: ButtonProps) {
   const baseClasses = 'inline-flex items-center justify-center font-medium rounded-md transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed';
   
@@ -44,8 +46,9 @@ export default function Button({
       onClick={onClick}
       disabled={disabled || loading}
       className={classes}
+      aria-label={ariaLabel}
     >
-      {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+      {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" data-testid="loader-icon" />}
       {children}
     </button>
   );

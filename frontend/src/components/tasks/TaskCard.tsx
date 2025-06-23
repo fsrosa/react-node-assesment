@@ -66,6 +66,7 @@ export default function TaskCard({
             size="sm"
             disabled={isSubmitting || isDeleting}
             className="p-2"
+            aria-label="Edit task"
           >
             <Edit className="h-4 w-4" />
           </Button>
@@ -76,6 +77,7 @@ export default function TaskCard({
             disabled={isSubmitting || isDeleting}
             loading={isDeleting}
             className="p-2"
+            aria-label="Delete task"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
